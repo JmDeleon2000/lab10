@@ -20,9 +20,23 @@ def delivery_report(err, msg):
             msg.topic(), msg.partition()))
 
 for _ in range(10):
-    sleep(randint(15,30))
-    data = {'temperatura': round(numpy.random.normal(50, 5),2),    'humedad':int(numpy.random.normal(50, 5)), 'direccion': random.choice(puntos)}
+    # sleep(randint(15,30))
+    
+    ## normal
+    # data = {'temperatura': round(numpy.random.normal(50, 5),2),    'humedad':int(numpy.random.normal(50, 5)), 'direccion': random.choice(puntos)}
+    # print(data)
+    # p.poll(0)
+    # p.produce('lab10grupo10', json.dumps(data, indent=2).encode('utf-8'), callback=delivery_report)
+
+    ## packed
+    temperatura = round(numpy.random.normal(50, 5),2)
+    humedad = int(numpy.random.normal(50, 5))
+    direccion = random.choice(range(len(puntos)))
+    data = {'temperatura': temperatura,    'humedad': humedad, 'direccion': direccion}
     print(data)
+    datapak = pack(temperatura, direccion, humedad)
+    print(datapak)
     p.poll(0)
-    p.produce('lab10grupo10', json.dumps(data, indent=2).encode('utf-8'), callback=delivery_report)
+    p.produce('lab10grupo10', datapak, callback=delivery_report)
+
 p.flush()

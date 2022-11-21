@@ -1,4 +1,5 @@
 from confluent_kafka import Consumer
+from bitpacker import unpack
 
 c = Consumer({
     'bootstrap.servers': '147.182.206.35:9092',
@@ -17,7 +18,12 @@ while True:
         print("Consumer error: {}".format(msg.error()))
         continue
 
-    print('Received message: {}'.format(msg.value().decode('utf-8')))
+    ## normal
+    # print('Received message: {}'.format(msg.value().decode('utf-8')))
+
+    ## packed
+    dataunpak = msg.value()
+    print(unpack(dataunpak))
 
 c.close()
 
