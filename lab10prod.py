@@ -5,7 +5,7 @@ from random import randint
 import numpy
 from time import sleep
 from bitpacker import pack
-from bitpacker import unpack
+
 
 
 direcciones = {'N':0, 'NW':1, 'W':2, 'SW':3, 'S':4, 'SE':5, 'E':6, 'NE':7}
