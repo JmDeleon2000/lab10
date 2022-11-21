@@ -19,9 +19,9 @@ def delivery_report(err, msg):
         print('Message delivered to {} [{}]'.format(
             msg.topic(), msg.partition()))
 
-for _ in range(10):
+for _ in range(100):
     # sleep(randint(15,30))
-    
+    sleep(randint(5,10))
     ## normal
     # data = {'temperatura': round(numpy.random.normal(50, 5),2),    'humedad':int(numpy.random.normal(50, 5)), 'direccion': random.choice(puntos)}
     # print(data)

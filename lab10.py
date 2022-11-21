@@ -15,14 +15,42 @@ def animate(i):
 
     axs[0].clear()
     axs[0].set_ylabel('Temperatura')
-    axs[0].plot(arriveTimes, [y[0] for y in captured_data])
+    axs[0].scatter(arriveTimes, [y[0] for y in captured_data])
     axs[1].clear()
     axs[1].set_ylabel('Humedad')
-    axs[1].plot(arriveTimes, [y[2] for y in captured_data])
+    axs[1].scatter(arriveTimes, [y[2] for y in captured_data])
     axs[2].clear()
     axs[2].set_ylabel('Dirección')
     axs[2].scatter(arriveTimes, [puntos[y[1]] for y in captured_data])
     axs[2].set_xlabel('Tiempo')
+
+    last = time.time()
+    while True:
+        msg = c.poll(1.0)
+
+        if msg is None:
+            return
+        if msg.error():
+            print("Consumer error: {}".format(msg.error()))
+            return
+        now = time.time()
+        ## normal
+        # print('Received message: {}'.format(msg.value().decode('utf-8')))
+
+        ## packed
+        dataunpak = msg.value()
+        unpacked = unpack(dataunpak)
+        print(f'Temperatura: {unpacked[0]}')
+        print(f'Humedad: {unpacked[2]}')
+        print(f'Dirección: {puntos[unpacked[1]]}')
+
+        captured_data.append(unpacked)
+        arriveTimes.append(now-last)
+        last = time.time()
+        
+
+
+    c.close()
 
 
 
@@ -37,33 +65,9 @@ c.subscribe(['lab10grupo10'])
 
 ani  = animation.FuncAnimation(fig, animate,  interval=1000)
 plt.show()
-last = time.time()
-while True:
-    msg = c.poll(1.0)
-
-    if msg is None:
-        continue
-    if msg.error():
-        print("Consumer error: {}".format(msg.error()))
-        continue
-    now = time.time()
-    ## normal
-    # print('Received message: {}'.format(msg.value().decode('utf-8')))
-
-    ## packed
-    dataunpak = msg.value()
-    unpacked = unpack(dataunpak)
-    print(f'Temperatura: {unpacked[0]}')
-    print(f'Humedad: {unpacked[2]}')
-    print(f'Dirección: {puntos[unpacked[1]]}')
-
-    captured_data.append(unpacked)
-    arriveTimes.append(now-last)
-    last = time.time()
-    
 
 
-c.close()
+
 
 # from confluent_kafka.admin import AdminClient, NewTopic
 
