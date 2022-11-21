@@ -14,11 +14,15 @@ def pack(temperatura, direccion, humedad):
 
     tempbuff = x|y
     dirbuff = int2ba(direccion, 24)<<21
-    return humbuff|dirbuff|tempbuff
+    packed = humbuff|dirbuff|tempbuff
+
+    return packed.tobytes()
 
 
 
-def unpack(packed):
+def unpack(buffer):
+    packed = bitarray(buffer=buffer)
+
     dir = ba2int(packed[:3:])
 
     hum = ba2int(packed[3::]>>14)
@@ -33,5 +37,3 @@ def unpack(packed):
     buff = buff|x|y
     temp = np.frombuffer(buff, dtype=np.half)
     return temp[0], dir, hum
-
-
