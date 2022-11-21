@@ -1,5 +1,26 @@
 from confluent_kafka import Consumer
 from bitpacker import unpack
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time
+
+fig, axs = plt.subplots(nrows=2, sharex=True, figsize=(20, 20))
+
+captured_data = []
+arriveTimes = []
+
+def animate(i):
+    x=list(range(i))
+
+    axs[0].clear()
+    axs[0].set_ylabel('Temperatura')
+    axs[0].plot(arriveTimes, [y[0] for y in captured_data])
+    axs[1].clear()
+    axs[1].set_ylabel('Humedad')
+    axs[1].plot(arriveTimes, [y[2] for y in captured_data])
+    axs[1].set_xlabel('Tiempo')
+
+
 
 c = Consumer({
     'bootstrap.servers': '147.182.206.35:9092',
@@ -9,6 +30,10 @@ c = Consumer({
 
 c.subscribe(['lab10grupo10'])
 
+puntos = ['N', 'NW', 'W', 'SW', 'S', 'SE', 'E', 'NE']
+ani  = animation.FuncAnimation(fig, animate,  interval=1000)
+plt.show()
+last = time.time()
 while True:
     msg = c.poll(1.0)
 
@@ -17,13 +42,22 @@ while True:
     if msg.error():
         print("Consumer error: {}".format(msg.error()))
         continue
-
+    now = time.time()
     ## normal
     # print('Received message: {}'.format(msg.value().decode('utf-8')))
 
     ## packed
     dataunpak = msg.value()
-    print(unpack(dataunpak))
+    unpacked = unpack(dataunpak)
+    print(f'Temperatura: {unpacked[0]}')
+    print(f'Humedad: {unpacked[2]}')
+    print(f'Dirección: {puntos[unpacked[1]]}')
+
+    captured_data.append(unpacked)
+    arriveTimes.append(now-last)
+    last = time.time()
+    
+
 
 c.close()
 
