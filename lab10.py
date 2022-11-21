@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
 
-fig, axs = plt.subplots(nrows=2, sharex=True, figsize=(20, 20))
+fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(20, 20))
 
 captured_data = []
 arriveTimes = []
+puntos = ['N', 'NW', 'W', 'SW', 'S', 'SE', 'E', 'NE']
 
 def animate(i):
     x=list(range(i))
@@ -18,7 +19,10 @@ def animate(i):
     axs[1].clear()
     axs[1].set_ylabel('Humedad')
     axs[1].plot(arriveTimes, [y[2] for y in captured_data])
-    axs[1].set_xlabel('Tiempo')
+    axs[2].clear()
+    axs[2].set_ylabel('Dirección')
+    axs[2].scatter(arriveTimes, [puntos[y[1]] for y in captured_data])
+    axs[2].set_xlabel('Tiempo')
 
 
 
@@ -30,7 +34,7 @@ c = Consumer({
 
 c.subscribe(['lab10grupo10'])
 
-puntos = ['N', 'NW', 'W', 'SW', 'S', 'SE', 'E', 'NE']
+
 ani  = animation.FuncAnimation(fig, animate,  interval=1000)
 plt.show()
 last = time.time()
